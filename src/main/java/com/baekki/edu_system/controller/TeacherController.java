@@ -6,10 +6,7 @@ import com.baekki.edu_system.repository.TeacherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/teachers")
@@ -34,6 +31,36 @@ public class TeacherController {
     @PostMapping("/add")
     public String add(@ModelAttribute Teacher teacher) {
         teacherRepository.save(teacher);
+
+        return "redirect:/teachers";
+    }
+
+    @GetMapping("edit/{id}")
+    public String editForm(@PathVariable int id, Model model) {
+        model.addAttribute("teacher", teacherRepository.findById(id));
+
+        return "teacher-form";
+    }
+
+    @PostMapping("/edit")
+    public String edit(@ModelAttribute Teacher teacher) {
+        teacherRepository.update(teacher);
+
+        return "redirect:/teachers";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable int id) {
+        try {
+            int affected = teacherRepository.deleteById(id);
+
+            if (affected == 0) {
+                System.out.println("해당 교사를 찾을 수 없습니다.");
+            }
+        } catch (Exception e) {
+//            model.addAttribute("error", "너 에러 발생:" + e.getMessage());
+            System.out.println(e.getMessage());
+        }
 
         return "redirect:/teachers";
     }
